@@ -1,7 +1,36 @@
 import { Link } from "react-router-dom"
 import { Inputfield } from "./Inputfield"
+import { useState } from "react"
+import axios from "axios"
+import { useNavigate } from "react-router-dom"
+import { BACKEND_URL } from "../config"
+
 
 export const Auth = ({type}:{type:"signup" | "signin"})=>{
+    const [username,setUsername] = useState("")
+    const [mail,setMail] = useState("")
+    const [pass,setPass] = useState("")
+    const navigate = useNavigate()
+
+    const submitHandler = async ()=>{
+        try {
+            const res = await axios.post(`${BACKEND_URL}api/v1/auth/signup`,{
+                name : username,
+                email : mail,
+                password : pass
+            })
+    
+            if(res.status===200){
+                localStorage.setItem("token",res.data)
+                navigate("/Blogs")
+            }
+        } catch (error) {
+            alert("error")
+        }
+        
+    }
+
+
     return (
         <div className="w-full bg-gray-100 lg:w-1/2 flex items-center justify-center">
             <div className="max-w-md w-full p-6">
@@ -27,14 +56,16 @@ export const Auth = ({type}:{type:"signup" | "signin"})=>{
             <div className="mt-4 text-sm text-gray-600 text-center">
                 <p>or</p>
             </div>
-            <form action="#" method="POST" className="space-y-4">
-                {type==="signup"?<Inputfield label="Username" inpType="text" inpId="username" inpName="username" inpPlaceholder="Enter your Username"></Inputfield>:""}
-                <Inputfield label="Email" inpType="email" inpId="email" inpName="email" inpPlaceholder="Enter your Email"></Inputfield>
-                <Inputfield label="Password" inpType="password" inpId="password" inpName="password" inpPlaceholder="********"></Inputfield>
+            <div className="space-y-4">
+                {type==="signup"?<Inputfield label="Username" inpType="text" inpId="username" inpName="username" inpPlaceholder="Enter your Username" onChange={(e)=>{setUsername(e.target.value)}}></Inputfield>:""}
+                
+                <Inputfield label="Email" inpType="email" inpId="email" inpName="email" inpPlaceholder="Enter your Email" onChange={(e)=>{setMail(e.target.value)}}></Inputfield>
+                
+                <Inputfield label="Password" inpType="password" inpId="password" inpName="password" inpPlaceholder="********" onChange={(e)=>{setPass(e.target.value)}}></Inputfield>
                 <div>
-                    <button type="submit" className="w-full bg-black text-white p-2 rounded-md hover:bg-gray-800 focus:outline-none focus:bg-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors duration-300">{type==="signin"?"Sign In":"Sign Up"}</button>
+                    <button type="submit" onClick={submitHandler} className="w-full bg-black text-white p-2 rounded-md hover:bg-gray-800 focus:outline-none focus:bg-black focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors duration-300">{type==="signin"?"Sign In":"Sign Up"}</button>
                 </div>
-            </form>
+            </div>
             <div className="mt-4 text-sm text-gray-600 text-center">
                 <p>{type ==="signin" ? "Don't have an account? " :"Already have an account? " }
                     <Link className="text-black hover:underline" to={type==="signin"?"/signup":"/signin"}>
