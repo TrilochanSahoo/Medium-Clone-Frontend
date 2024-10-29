@@ -14,18 +14,36 @@ export const Auth = ({type}:{type:"signup" | "signin"})=>{
 
     const submitHandler = async ()=>{
         try {
-            const res = await axios.post(`${BACKEND_URL}api/v1/auth/signup`,{
-                name : username,
-                email : mail,
-                password : pass
-            })
+            let apiUrl:string = ""
+            let payload = {}
+
+            if(type==="signup"){
+                apiUrl = `${BACKEND_URL}api/v1/auth/signup`
+                payload = {
+                    name : username,
+                    email : mail,
+                    password : pass
+                }
+            }
+            else{
+                apiUrl = `${BACKEND_URL}api/v1/auth/signin`
+                payload = {
+                    email : mail,
+                    password : pass
+                }
+            }
+            const res = await axios.post(apiUrl,payload)
     
             if(res.status===200){
-                localStorage.setItem("token",res.data)
+                localStorage.setItem("token",res.data.auth)
                 navigate("/Blogs")
             }
+            else{
+                alert(res.data.message)
+            }
+
         } catch (error) {
-            alert("error")
+            console.log(error)
         }
         
     }
