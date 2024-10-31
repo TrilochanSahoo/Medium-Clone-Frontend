@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 // import { Button } from "@/components/ui/button"
 // import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 // import { Input } from "@/components/ui/input"
@@ -13,14 +13,32 @@ import {
   LayoutGridIcon,
   LayoutListIcon,
 } from "lucide-react";
+import { BACKEND_URL } from "../config";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 // import Link from "next/link"
+
+
+interface Blog {
+  title : string,
+  content : string,
+  category : string,
+  tag : string,
+  readTime : string,
+  image : string,
+  published : boolean,
+  publishedDate : string,
+  authorId : string
+}
 
 export const Blogs = () => {
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const [isCardView, setIsCardView] = useState(true);
+  const [blogPosts,setBlogPosts] = useState<Blog[]>([])
+  const navigate = useNavigate()
 
   const categories = ["All", "Technology", "Design", "Business", "Lifestyle"];
-  const blogPosts = [
+  const blogPost = [
     {
       title: "The Future of Artificial Intelligence in 2024",
       excerpt:
@@ -58,6 +76,32 @@ export const Blogs = () => {
         "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     },
   ];
+
+  useEffect(()=>{
+    const apiUrl:string = `${BACKEND_URL}api/v1/blog/bulk`
+    const token = localStorage.getItem("token")
+    if(token){
+      async function fetchBlog(){
+        await axios({
+          method : "get",
+          url : apiUrl,
+          headers : {
+            authorization : `Bearer ${token}`
+          }
+        })
+        .then(function (res){
+          setBlogPosts(res.data.blogInfo)
+        })
+      }
+
+      fetchBlog()
+    }
+    else{
+      navigate("/signin")
+    }
+    
+
+  },[])
 
   return (
     <div className='min-h-screen bg-gray-50'>
@@ -190,10 +234,10 @@ export const Blogs = () => {
                 {/* card content  */}
                 <div className="p-6 pt-0">
                   <p className='text-muted-foreground mb-4'>
-                    {post.excerpt}
+                    {post.content}
                   </p>
                   <div className='flex flex-wrap gap-2'>
-                    {post.tags.map((tag, tagIndex) => (
+                    {post.tag.split(",").map((tag, tagIndex) => (
                       // badge 
                       <div key={tagIndex} className='inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 text-foreground'>
                         {tag}
@@ -209,21 +253,21 @@ export const Blogs = () => {
                       <img
                         className='aspect-square h-full w-full'
                         src="https://plus.unsplash.com/premium_photo-1661914978519-52a11fe159a7?q=80&w=1035&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                        alt={post.author}
+                        // alt={post.author}
                       />
 
-                      <div className='flex h-full w-full items-center justify-center rounded-full bg-muted'>
+                      {/* <div className='flex h-full w-full items-center justify-center rounded-full bg-muted'>
                         {post.author
                           .split(" ")
                           .map((n) => n[0])
                           .join("")}
-                      </div>
+                      </div> */}
                     </div>
-                    <span className='text-sm font-medium'>{post.author}</span>
+                    <span className='text-sm font-medium'>{post.authorId}</span>
                   </div>
                   <div className='flex items-center text-sm text-muted-foreground'>
                     <CalendarIcon className='w-4 h-4 mr-1' />
-                    {post.date}
+                    {post.publishedDate}
                   </div>
                 </div>
               </div>
