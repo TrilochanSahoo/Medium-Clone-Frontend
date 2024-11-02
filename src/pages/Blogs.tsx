@@ -1,10 +1,4 @@
 import { useState, useEffect } from "react";
-// import { Button } from "@/components/ui/button"
-// import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-// import { Input } from "@/components/ui/input"
-// import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-// import { Badge } from "@/components/ui/badge"
-
 import { BACKEND_URL } from "../config";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -12,10 +6,9 @@ import { BlogTitleCard } from "../components/Card/BlogTitleCard";
 import { TopNavBar } from "../components/Navbar/TopNavBar";
 import { LeftNavBar } from "../components/Navbar/LeftNavBar";
 import { Footer } from "../components/Navbar/Footer";
-// import Link from "next/link"
-
 
 interface Blog {
+  id : string,
   title : string,
   content : string,
   category : string,
@@ -102,6 +95,7 @@ export const Blogs = () => {
     setIsCardView(!isCardView)
   }
 
+
   return (
     <div className='min-h-screen bg-gray-50 flex flex-col'>
       <header className='bg-white shadow-sm'>
@@ -128,7 +122,9 @@ export const Blogs = () => {
 
         <div className={`grid gap-8 ${isCardView ? "md:grid-cols-2 lg:grid-cols-3" : "grid-cols-1"}`}>
           {blogPosts.map((post, index) => (
-            <BlogTitleCard post={post} index={index} isCardView={isCardView}></BlogTitleCard>
+            <BlogTitleCard post={post} index={index} isCardView={isCardView} onClick={()=>{
+              navigate(`/blog`)
+            }}></BlogTitleCard>
           ))}
         </div>
       </main>

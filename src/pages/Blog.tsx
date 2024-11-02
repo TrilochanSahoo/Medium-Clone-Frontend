@@ -1,13 +1,10 @@
-import { Link } from "react-router-dom"
 import { useState, useEffect } from "react"
-// import Link from "next/link"
-// import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-// import { Button } from "@/components/ui/button"
-// import { ScrollArea } from "@/components/ui/scroll-area"
-// import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { CalendarIcon, ClockIcon, ThumbsUpIcon, MessageCircleIcon, ShareIcon, ChevronLeftIcon, SearchIcon, LayoutDashboard, FileText, Settings } from "lucide-react"
+import { Link } from "react-router-dom"
+import { CalendarIcon, ClockIcon, ThumbsUpIcon, MessageCircleIcon, ShareIcon, SearchIcon } from "lucide-react"
 import { Button } from "../components/Button"
 import { Avatar } from "../components/Avatar"
+import { LeftNavBar } from "../components/Navbar/LeftNavBar"
+import { Footer } from "../components/Navbar/Footer"
 
 export const Blog = () => {
   const [isLiked, setIsLiked] = useState(false)
@@ -144,21 +141,8 @@ export const Blog = () => {
 
       <div className="flex-1 flex mt-16">
         {/* Left Sidebar */}
-        
 
-        <aside className="w-16 bg-gray-100 border-r flex flex-col items-center py-8 space-y-6 fixed left-0 top-16 bottom-0">
-          <Button className="text-gray-600 h-10 w-10 hover:bg-accent hover:text-accent-foreground hover:text-gray-900">
-            <Link to="/blogs" >
-              <LayoutDashboard className="w-6 h-6" />
-            </Link>
-          </Button>
-          <Button className="text-gray-600 h-10 w-10 hover:bg-accent hover:text-accent-foreground hover:text-gray-900">
-            <FileText className="w-6 h-6" />
-          </Button>
-          <Button className="text-gray-600 h-10 w-10 hover:bg-accent hover:text-accent-foreground hover:text-gray-900">
-            <Settings className="w-6 h-6" />
-          </Button>
-        </aside>
+        <LeftNavBar></LeftNavBar>
 
         {/* Main Content */}
         <main className="flex-1 ml-16 mr-0 md:mr-64">
@@ -242,11 +226,7 @@ export const Blog = () => {
         </aside>
       </div>
 
-      <footer className="bg-gray-100">
-        <div className="container mx-auto px-4 py-8">
-          <p className="text-center text-gray-500">&copy; 2024 TechInsight. All rights reserved.</p>
-        </div>
-      </footer>
+      <Footer></Footer>
     </div>
   )
 }

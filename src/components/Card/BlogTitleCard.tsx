@@ -1,6 +1,7 @@
 import { CalendarIcon, ClockIcon} from "lucide-react";
 
 interface Blog {
+    id : string,
     title : string,
     content : string,
     category : string,
@@ -15,12 +16,13 @@ interface Blog {
 interface BlogTitleType {
     index : number,
     post : Blog,
-    isCardView : boolean
+    isCardView : boolean,
+    onClick : ()=>void
 }
 
-export const BlogTitleCard = ({index,post,isCardView}:BlogTitleType)=>{
+export const BlogTitleCard = ({index,post,isCardView,onClick}:BlogTitleType)=>{
     return (
-        <div key={index} className={`rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden hover:shadow-lg transition-shadow duration-300 ${isCardView ? "" : "flex"}`}>
+        <div key={index} className={`rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden hover:shadow-lg transition-shadow duration-300 ${isCardView ? "" : "flex"}`} onClick={onClick}>
             <img src={post.image} alt={post.title} className={`object-cover ${isCardView ? "w-full h-48" : "w-1/3 h-full"}`}/>
               <div className={`flex flex-col ${isCardView ? "" : "w-2/3"}`}>
                 <div className="flex flex-col space-y-1.5 p-6">
