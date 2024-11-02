@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef, useMemo } from "react"
 // import { Button } from "@/components/ui/button"
 // import { Input } from "@/components/ui/input"
 // import { Textarea } from "@/components/ui/textarea"
@@ -11,7 +11,8 @@ import { useState, useEffect, useCallback } from "react"
 // import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 // import { Badge } from "@/components/ui/badge"
 // import { ScrollArea } from "@/components/ui/scroll-area"
-import { CalendarIcon, ImageIcon, Link2Icon, Bold, Italic, List, ListOrdered, Undo, Redo, Code, Quote, LayoutDashboard, FileText, Settings, LogOut } from "lucide-react"
+import { CalendarIcon, ImageIcon, Link2Icon, Bold, Italic, List, ListOrdered, Undo, Redo, Code, Quote, LayoutDashboard, FileText, Settings, LogOut, ChevronDown } from "lucide-react"
+import JoditEditor from "jodit-react"
 // import { Editor, EditorContent, useEditor } from '@tiptap/react'
 // import StarterKit from '@tiptap/starter-kit'
 // import Image from '@tiptap/extension-image'
@@ -19,6 +20,8 @@ import { Button } from "../components/Button"
 import { Card } from "../components/Card"
 import { CardContent } from "../components/CardContent"
 import { Link } from "react-router-dom"
+import { TopNavBar } from "../components/Navbar/TopNavBar"
+import { LeftNavBar } from "../components/Navbar/LeftNavBar"
 
 // Mock data for tag suggestions and image gallery
 const tagSuggestions = ["Technology", "Web Development", "React", "JavaScript", "UI/UX", "Design", "Programming"]
@@ -38,130 +41,180 @@ export const AddBlog = ()=> {
   const [wordCount, setWordCount] = useState(0)
   const [readingTime, setReadingTime] = useState(0)
 
-//   const editor = useEditor({
-//     extensions: [
-//       StarterKit,
-//       Image,
-//     ],
-//     content: content,
-//     onUpdate: ({ editor }) => {
-//       const newContent = editor.getHTML()
-//       setContent(newContent)
-//       updateWordCountAndReadingTime(newContent)
-//     },
-//   })
+  const editors = useRef()
 
-//   const updateWordCountAndReadingTime = useCallback((text) => {
-//     const words = text.split(/\s+/).filter(word => word.length > 0)
-//     const wordCount = words.length
-//     const readingTime = Math.ceil(wordCount / 200) // Assuming 200 words per minute reading speed
-//     setWordCount(wordCount)
-//     setReadingTime(readingTime)
-//   }, [])
+  const config = {
+    readonly: false, // all options from https://xdsoft.net/jodit/doc/
+    height: '450px',
+    width: 'auto',
+    // enableDragAndDropFileToEditor: true,
+    // buttons: [
+    //     'bold',
+    //     'italic',
+    //     'underline',
+    //     '|',
+    //     'ul',
+    //     'ol',
+    //     '|',
+    //     'font',
+    //     'fontsize',
+    //     'brush',
+    //     'paragraph',
+    //     '|',
+    //     'image',
+    //     'table',
+    //     'link',
+    //     '|',
+    //     'left',
+    //     'center',
+    //     'right',
+    //     'justify',
+    //     '|',
+    //     'undo',
+    //     'redo',
+    //     '|',
+    //     'hr',
+    //     'eraser',
+    //     'fullsize',
+    // ],
+    // uploader: { insertImageAsBase64URI: true },
+    // removeButtons: ['brush', 'file'],
+    showXPathInStatusbar: false,
+    showCharsCounter: false,
+    showWordsCounter: true,
+    toolbarAdaptive: true,
+    toolbarSticky: true,
+    // style: {
+    //     background: '#27272E',
+    //     color: 'rgba(255,255,255,0.5)',
+    // },
+  }
 
-//   useEffect(() => {
-//     const autoSaveInterval = setInterval(() => {
-//       console.log("Auto-saving...")
-//       // Implement your auto-save logic here
-//     }, 60000) // Auto-save every minute
 
-//     return () => clearInterval(autoSaveInterval)
-//   }, [])
+  // const editor = useEditor({
+  //   extensions: [
+  //     StarterKit,
+  //     Image,
+  //   ],
+  //   content: content,
+  //   onUpdate: ({ editor }) => {
+  //     const newContent = editor.getHTML()
+  //     setContent(newContent)
+  //     updateWordCountAndReadingTime(newContent)
+  //   },
+  // })
 
-//   const addTag = (tag) => {
-//     if (!tags.includes(tag)) {
-//       setTags([...tags, tag])
-//     }
-//   }
+  // const updateWordCountAndReadingTime = useCallback((text) => {
+  //   const words = text.split(/\s+/).filter(word => word.length > 0)
+  //   const wordCount = words.length
+  //   const readingTime = Math.ceil(wordCount / 200) // Assuming 200 words per minute reading speed
+  //   setWordCount(wordCount)
+  //   setReadingTime(readingTime)
+  // }, [])
 
-//   const removeTag = (tag) => {
-//     setTags(tags.filter(t => t !== tag))
-//   }
+  useEffect(() => {
+    const autoSaveInterval = setInterval(() => {
+      console.log("Auto-saving...")
+      // Implement your auto-save logic here
+    }, 60000) // Auto-save every minute
 
-//   const MenuBar = ({ editor }) => {
-//     if (!editor) {
-//       return null
-//     }
+    return () => clearInterval(autoSaveInterval)
+  }, [])
 
-//     return (
-//       <div className="flex flex-wrap gap-2 mb-4">
-//         <Button
-//           variant="outline"
-//           size="icon"
-//           onClick={() => editor.chain().focus().toggleBold().run()}
-//           disabled={!editor.can().chain().focus().toggleBold().run()}
-//           className={editor.isActive('bold') ? 'is-active' : ''}
-//         >
-//           <Bold className="h-4 w-4" />
-//         </Button>
-//         <Button
-//           variant="outline"
-//           size="icon"
-//           onClick={() => editor.chain().focus().toggleItalic().run()}
-//           disabled={!editor.can().chain().focus().toggleItalic().run()}
-//           className={editor.isActive('italic') ? 'is-active' : ''}
-//         >
-//           <Italic className="h-4 w-4" />
-//         </Button>
-//         <Button
-//           variant="outline"
-//           size="icon"
-//           onClick={() => editor.chain().focus().toggleBulletList().run()}
-//           className={editor.isActive('bulletList') ? 'is-active' : ''}
-//         >
-//           <List className="h-4 w-4" />
-//         </Button>
-//         <Button
-//           variant="outline"
-//           size="icon"
-//           onClick={() => editor.chain().focus().toggleOrderedList().run()}
-//           className={editor.isActive('orderedList') ? 'is-active' : ''}
-//         >
-//           <ListOrdered className="h-4 w-4" />
-//         </Button>
-//         <Button
-//           variant="outline"
-//           size="icon"
-//           onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-//           className={editor.isActive('codeBlock') ? 'is-active' : ''}
-//         >
-//           <Code className="h-4 w-4" />
-//         </Button>
-//         <Button
-//           variant="outline"
-//           size="icon"
-//           onClick={() => editor.chain().focus().toggleBlockquote().run()}
-//           className={editor.isActive('blockquote') ? 'is-active' : ''}
-//         >
-//           <Quote className="h-4 w-4" />
-//         </Button>
-//         <Button
-//           variant="outline"
-//           size="icon"
-//           onClick={() => editor.chain().focus().undo().run()}
-//           disabled={!editor.can().chain().focus().undo().run()}
-//         >
-//           <Undo className="h-4 w-4" />
-//         </Button>
-//         <Button
-//           variant="outline"
-//           size="icon"
-//           onClick={() => editor.chain().focus().redo().run()}
-//           disabled={!editor.can().chain().focus().redo().run()}
-//         >
-//           <Redo className="h-4 w-4" />
-//         </Button>
-//       </div>
-//     )
-//   }
+  // const addTag = (tag) => {
+  //   if (!tags.includes(tag)) {
+  //     setTags([...tags, tag])
+  //   }
+  // }
+
+  // const removeTag = (tag) => {
+  //   setTags(tags.filter(t => t !== tag))
+  // }
+
+  // const MenuBar = ({ editor }) => {
+  //   if (!editor) {
+  //     return null
+  //   }
+
+  //   return (
+  //     <div className="flex flex-wrap gap-2 mb-4">
+  //       <Button
+  //         variant="outline"
+  //         size="icon"
+  //         onClick={() => editor.chain().focus().toggleBold().run()}
+  //         disabled={!editor.can().chain().focus().toggleBold().run()}
+  //         className={editor.isActive('bold') ? 'is-active' : ''}
+  //       >
+  //         <Bold className="h-4 w-4" />
+  //       </Button>
+  //       <Button
+  //         variant="outline"
+  //         size="icon"
+  //         onClick={() => editor.chain().focus().toggleItalic().run()}
+  //         disabled={!editor.can().chain().focus().toggleItalic().run()}
+  //         className={editor.isActive('italic') ? 'is-active' : ''}
+  //       >
+  //         <Italic className="h-4 w-4" />
+  //       </Button>
+  //       <Button
+  //         variant="outline"
+  //         size="icon"
+  //         onClick={() => editor.chain().focus().toggleBulletList().run()}
+  //         className={editor.isActive('bulletList') ? 'is-active' : ''}
+  //       >
+  //         <List className="h-4 w-4" />
+  //       </Button>
+  //       <Button
+  //         variant="outline"
+  //         size="icon"
+  //         onClick={() => editor.chain().focus().toggleOrderedList().run()}
+  //         className={editor.isActive('orderedList') ? 'is-active' : ''}
+  //       >
+  //         <ListOrdered className="h-4 w-4" />
+  //       </Button>
+  //       <Button
+  //         variant="outline"
+  //         size="icon"
+  //         onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+  //         className={editor.isActive('codeBlock') ? 'is-active' : ''}
+  //       >
+  //         <Code className="h-4 w-4" />
+  //       </Button>
+  //       <Button
+  //         variant="outline"
+  //         size="icon"
+  //         onClick={() => editor.chain().focus().toggleBlockquote().run()}
+  //         className={editor.isActive('blockquote') ? 'is-active' : ''}
+  //       >
+  //         <Quote className="h-4 w-4" />
+  //       </Button>
+  //       <Button
+  //         variant="outline"
+  //         size="icon"
+  //         onClick={() => editor.chain().focus().undo().run()}
+  //         disabled={!editor.can().chain().focus().undo().run()}
+  //       >
+  //         <Undo className="h-4 w-4" />
+  //       </Button>
+  //       <Button
+  //         variant="outline"
+  //         size="icon"
+  //         onClick={() => editor.chain().focus().redo().run()}
+  //         disabled={!editor.can().chain().focus().redo().run()}
+  //       >
+  //         <Redo className="h-4 w-4" />
+  //       </Button>
+  //     </div>
+  //   )
+  // }
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="min-h-screen bg-background flex flex-col">
       {/* Left Navigation Bar */}
       {/* <nav className="w-64 bg-gray-100 border-r p-4 hidden md:block"> */}
-        <aside className="w-16 bg-gray-100 border-r flex flex-col items-center py-8 space-y-6 fixed left-0 top-16 bottom-0">
+        {/* <aside className="w-16 bg-gray-100 border-r flex flex-col items-center py-8 space-y-6 fixed left-0 top-16 bottom-0"> */}
 
-        
+
           {/* <Button variant="ghost" size="icon" className="w-full">
             <LayoutDashboard className="h-5 w-5" />
           </Button>
@@ -171,7 +224,7 @@ export const AddBlog = ()=> {
           <Button variant="ghost" size="icon" className="w-full">
             <Settings className="h-5 w-5" />
           </Button> */}
-          <Button className="text-gray-600 h-10 w-10 hover:bg-accent hover:text-accent-foreground hover:text-gray-900">
+          {/* <Button className="text-gray-600 h-10 w-10 hover:bg-accent hover:text-accent-foreground hover:text-gray-900">
             <Link to="/blogs" >
               <LayoutDashboard className="w-6 h-6 mx-auto" />
             </Link>
@@ -181,10 +234,16 @@ export const AddBlog = ()=> {
           </Button>
           <Button className="text-gray-600 h-10 w-10 hover:bg-accent hover:text-accent-foreground hover:text-gray-900">
             <Settings className="w-6 h-6 mx-auto" />
-          </Button>
+          </Button> */}
         {/* </div> */}
-        </aside>
+        {/* </aside> */}
       {/* </nav> */}
+
+      <header className='bg-white shadow-sm'>
+        <TopNavBar isCardView={true} CardViewBtnHandler = {()=>{}} ></TopNavBar>
+      </header>
+
+      <LeftNavBar></LeftNavBar>
 
       <div className="flex-1 flex flex-col">
         <header className="border-b">
@@ -207,60 +266,52 @@ export const AddBlog = ()=> {
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto">
+        <main >
           <div className="container mx-auto px-4 py-8">
             <div className="grid gap-8 md:grid-cols-3">
-              {/* <div className="md:col-span-2 space-y-6">
-                <Input
-                  type="text"
-                  placeholder="Enter your blog title"
-                  className="text-3xl font-bold"
+              <div className="md:col-span-2 space-y-6">
+                <input type="text" placeholder="Enter your blog title"
+                  className="text-xl"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                 />
 
-                <Tabs defaultValue="write" className="w-full">
-                  <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="write">Write</TabsTrigger>
-                    <TabsTrigger value="preview">Preview</TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="write">
-                    <Card>
-                      <CardContent className="p-4">
-                        <MenuBar editor={editor} />
-                        <EditorContent editor={editor} className="min-h-[400px] prose max-w-none" />
-                      </CardContent>
-                    </Card>
-                  </TabsContent>
-                  <TabsContent value="preview">
-                    <Card>
-                      <CardContent className="prose max-w-none p-4">
-                        <h1>{title}</h1>
-                        <div dangerouslySetInnerHTML={{ __html: content }} />
-                      </CardContent>
-                    </Card>
-                  </TabsContent>
-                </Tabs>
+                <div className="w-full">
+                  <div className="mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+                      <JoditEditor config = {config} value={content} onChange={(newContent)=>{
+                        setContent(newContent)
+                        console.log(newContent)}}></JoditEditor>
+                  </div>
+                </div>
+
+
 
                 <div className="flex justify-between text-sm text-muted-foreground">
                   <span>Word count: {wordCount}</span>
                   <span>Estimated reading time: {readingTime} min</span>
                 </div>
-              </div> */}
+              </div>
 
               <div className="space-y-6">
                 <Card>
                   <CardContent className="p-4 space-y-4">
+                    {/* single select */}
                     <div className="space-y-2">
-                      <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" htmlFor="category">Category</label>
-                      
-                      <select id="category">
-                          <option value="technology">Technology</option>
-                          <option value="lifestyle">Lifestyle</option>
-                          <option value="travel">Travel</option>
+                      <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" htmlFor="category">
+                        Category 
+                      </label>
+                      <select id="category" className="flex h-10 w-full items-center justify-between rounded-md cursor-pointer border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1">
+                          <option value="" disabled selected>
+                            Select your option
+                          </option>
+                          <option value="technology" >Technology</option>
+                          <option value="lifestyle" >Lifestyle</option>
+                          <option value="travel" >Travel</option>
                           <option value="food">Food</option>
                       </select>
                     </div>
+
+                    
 
                     {/* <div className="space-y-2">
                       <Label htmlFor="tags">Tags</Label>
@@ -281,9 +332,9 @@ export const AddBlog = ()=> {
                           ))}
                         </SelectContent>
                       </Select>
-                    </div>
+                    </div> */}
 
-                    <div className="space-y-2">
+                    {/* <div className="space-y-2">
                       <Label htmlFor="featured-image">Featured Image</Label>
                       <Dialog>
                         <DialogTrigger asChild>
@@ -353,10 +404,6 @@ export const AddBlog = ()=> {
             </div>
           </div>
         </main>
-
-        <footer className="border-t py-4 px-4 text-center text-sm text-muted-foreground">
-          <p>&copy; 2024 BlogCMS. All rights reserved.</p>
-        </footer>
       </div>
     </div>
   )
