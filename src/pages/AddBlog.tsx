@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef, useMemo } from "react"
+import { useState, useEffect, useCallback, useRef, FocusEvent } from "react"
 // import { Button } from "@/components/ui/button"
 // import { Input } from "@/components/ui/input"
 // import { Textarea } from "@/components/ui/textarea"
@@ -22,6 +22,7 @@ import { CardContent } from "../components/CardContent"
 import { Link } from "react-router-dom"
 import { TopNavBar } from "../components/Navbar/TopNavBar"
 import { LeftNavBar } from "../components/Navbar/LeftNavBar"
+import { Avatar } from "../components/Avatar"
 
 // Mock data for tag suggestions and image gallery
 const tagSuggestions = ["Technology", "Web Development", "React", "JavaScript", "UI/UX", "Design", "Programming"]
@@ -36,12 +37,21 @@ export const AddBlog = ()=> {
   const [isPublished, setIsPublished] = useState(false)
   const [title, setTitle] = useState("")
   const [content, setContent] = useState("")
-  const [tags, setTags] = useState([])
+  const [tags, setTags] = useState<string[]>([])
   const [selectedImage, setSelectedImage] = useState(null)
   const [wordCount, setWordCount] = useState(0)
   const [readingTime, setReadingTime] = useState(0)
 
   const editors = useRef()
+
+  const dateInputRef = useRef<HTMLInputElement>(null);
+
+  const handleInputFocus = (event: FocusEvent<HTMLInputElement>) => {
+    // Check if the ref exists, then trigger the date picker
+    if (dateInputRef.current) {
+      dateInputRef.current.showPicker();
+    }
+  };
 
   const config = {
     readonly: false, // all options from https://xdsoft.net/jodit/doc/
@@ -121,15 +131,15 @@ export const AddBlog = ()=> {
     return () => clearInterval(autoSaveInterval)
   }, [])
 
-  // const addTag = (tag) => {
-  //   if (!tags.includes(tag)) {
-  //     setTags([...tags, tag])
-  //   }
-  // }
+  const addTag = (e: React.ChangeEvent<{ value: unknown }>) => {
+    if (!tags.includes(e.target.value as string)) {
+      setTags([...tags, e.target.value as string])
+    }
+  }
 
-  // const removeTag = (tag) => {
-  //   setTags(tags.filter(t => t !== tag))
-  // }
+  const removeTag = (tag:string) => {
+    setTags(tags.filter(t => t !== tag))
+  }
 
   // const MenuBar = ({ editor }) => {
   //   if (!editor) {
@@ -311,28 +321,30 @@ export const AddBlog = ()=> {
                       </select>
                     </div>
 
-                    
-
-                    {/* <div className="space-y-2">
-                      <Label htmlFor="tags">Tags</Label>
+                    {/* Multiselect Tags */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" htmlFor="tags">
+                        Tags 
+                      </label>
+                      
                       <div className="flex flex-wrap gap-2 mb-2">
                         {tags.map(tag => (
-                          <Badge key={tag} variant="secondary" className="cursor-pointer" onClick={() => removeTag(tag)}>
+                          <div key={tag} className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 cursor-pointer border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80" onClick={() => removeTag(tag)}>
                             {tag} ✕
-                          </Badge>
+                          </div>
                         ))}
                       </div>
-                      <Select onValueChange={addTag}>
-                        <SelectTrigger id="tags">
-                          <SelectValue placeholder="Add a tag" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {tagSuggestions.map(tag => (
-                            <SelectItem key={tag} value={tag}>{tag}</SelectItem>
+                      <select id="tag" onChange={addTag} 
+                      className="flex h-10 w-full items-center justify-between rounded-md cursor-pointer border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1">
+                          <option value="" disabled selected>
+                            Add a tag
+                          </option>
+                          {tagSuggestions.map(tag=>(
+                            <option key={tag} value={tag} >{tag}</option>
                           ))}
-                        </SelectContent>
-                      </Select>
-                    </div> */}
+                      </select>
+                    </div>
+
 
                     {/* <div className="space-y-2">
                       <Label htmlFor="featured-image">Featured Image</Label>
@@ -361,15 +373,20 @@ export const AddBlog = ()=> {
                       {selectedImage && (
                         <p className="text-sm text-muted-foreground">Selected image: {selectedImage}</p>
                       )}
-                    </div>
+                    </div> */}
 
                     <div className="space-y-2">
-                      <Label>Author</Label>
+                    <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" htmlFor="tags">
+                        Author
+                      </label>
                       <div className="flex items-center space-x-4">
-                        <Avatar>
-                          <AvatarImage src="/placeholder.svg?height=40&width=40" alt="Author"   />
-                          <AvatarFallback>JD</AvatarFallback>
-                        </Avatar>
+                        
+                        <div className="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full">
+                          <img className='aspect-square h-full w-full' src="https://plus.unsplash.com/premium_photo-1661914978519-52a11fe159a7?q=80&w=1035&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" />
+                          <div className='flex h-full w-full items-center justify-center rounded-full bg-muted'>
+                            JD
+                          </div>
+                      </div>
                         <div>
                           <p className="font-medium">John Doe</p>
                           <p className="text-sm text-muted-foreground">john@example.com</p>
@@ -378,12 +395,21 @@ export const AddBlog = ()=> {
                     </div>
 
                     <div className="space-y-2">
-                      <Label>Publish Date</Label>
-                      <Button variant="outline" className="w-full justify-start text-left font-normal">
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        <span>Pick a date</span>
-                      </Button>
-                    </div> */}
+                      <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" htmlFor="tags">
+                        Publish Date 
+                      </label>
+                      <div className="relative max-w-sm">
+                        <div className="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
+                          <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
+                          </svg>
+                        </div>
+                        <input id="default-datepicker" type="date" className="bg-gray-50 border tracking-wide border-gray-300 text-gray-900 text-sm rounded-lg block w-full ps-10 p-2.5 " placeholder="Select date"
+                        ref={dateInputRef}
+                        onFocus={handleInputFocus}/>
+                      </div>
+                      
+                    </div>
                   </CardContent>
                 </Card>
 
