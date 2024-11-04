@@ -1,21 +1,7 @@
 import { useState, useEffect, useCallback, useRef, FocusEvent } from "react"
-// import { Button } from "@/components/ui/button"
-// import { Input } from "@/components/ui/input"
-// import { Textarea } from "@/components/ui/textarea"
-// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-// import { Switch } from "@/components/ui/switch"
-// import { Label } from "@/components/ui/label"
-// import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-// import { Card, CardContent } from "@/components/ui/card"
-// import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-// import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
-// import { Badge } from "@/components/ui/badge"
-// import { ScrollArea } from "@/components/ui/scroll-area"
+
 import { CalendarIcon, ImageIcon, Link2Icon, Bold, Italic, List, ListOrdered, Undo, Redo, Code, Quote, LayoutDashboard, FileText, Settings, LogOut, ChevronDown } from "lucide-react"
 import JoditEditor from "jodit-react"
-// import { Editor, EditorContent, useEditor } from '@tiptap/react'
-// import StarterKit from '@tiptap/starter-kit'
-// import Image from '@tiptap/extension-image'
 import { Button } from "../components/Button"
 import { Card } from "../components/Card"
 import { CardContent } from "../components/CardContent"
@@ -42,7 +28,7 @@ export const AddBlog = ()=> {
   const [wordCount, setWordCount] = useState(0)
   const [readingTime, setReadingTime] = useState(0)
 
-  const editors = useRef()
+  const editors = useRef(null)
 
   const dateInputRef = useRef<HTMLInputElement>(null);
 
@@ -141,83 +127,6 @@ export const AddBlog = ()=> {
     setTags(tags.filter(t => t !== tag))
   }
 
-  // const MenuBar = ({ editor }) => {
-  //   if (!editor) {
-  //     return null
-  //   }
-
-  //   return (
-  //     <div className="flex flex-wrap gap-2 mb-4">
-  //       <Button
-  //         variant="outline"
-  //         size="icon"
-  //         onClick={() => editor.chain().focus().toggleBold().run()}
-  //         disabled={!editor.can().chain().focus().toggleBold().run()}
-  //         className={editor.isActive('bold') ? 'is-active' : ''}
-  //       >
-  //         <Bold className="h-4 w-4" />
-  //       </Button>
-  //       <Button
-  //         variant="outline"
-  //         size="icon"
-  //         onClick={() => editor.chain().focus().toggleItalic().run()}
-  //         disabled={!editor.can().chain().focus().toggleItalic().run()}
-  //         className={editor.isActive('italic') ? 'is-active' : ''}
-  //       >
-  //         <Italic className="h-4 w-4" />
-  //       </Button>
-  //       <Button
-  //         variant="outline"
-  //         size="icon"
-  //         onClick={() => editor.chain().focus().toggleBulletList().run()}
-  //         className={editor.isActive('bulletList') ? 'is-active' : ''}
-  //       >
-  //         <List className="h-4 w-4" />
-  //       </Button>
-  //       <Button
-  //         variant="outline"
-  //         size="icon"
-  //         onClick={() => editor.chain().focus().toggleOrderedList().run()}
-  //         className={editor.isActive('orderedList') ? 'is-active' : ''}
-  //       >
-  //         <ListOrdered className="h-4 w-4" />
-  //       </Button>
-  //       <Button
-  //         variant="outline"
-  //         size="icon"
-  //         onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-  //         className={editor.isActive('codeBlock') ? 'is-active' : ''}
-  //       >
-  //         <Code className="h-4 w-4" />
-  //       </Button>
-  //       <Button
-  //         variant="outline"
-  //         size="icon"
-  //         onClick={() => editor.chain().focus().toggleBlockquote().run()}
-  //         className={editor.isActive('blockquote') ? 'is-active' : ''}
-  //       >
-  //         <Quote className="h-4 w-4" />
-  //       </Button>
-  //       <Button
-  //         variant="outline"
-  //         size="icon"
-  //         onClick={() => editor.chain().focus().undo().run()}
-  //         disabled={!editor.can().chain().focus().undo().run()}
-  //       >
-  //         <Undo className="h-4 w-4" />
-  //       </Button>
-  //       <Button
-  //         variant="outline"
-  //         size="icon"
-  //         onClick={() => editor.chain().focus().redo().run()}
-  //         disabled={!editor.can().chain().focus().redo().run()}
-  //       >
-  //         <Redo className="h-4 w-4" />
-  //       </Button>
-  //     </div>
-  //   )
-  // }
-
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Left Navigation Bar */}
@@ -288,9 +197,18 @@ export const AddBlog = ()=> {
 
                 <div className="w-full">
                   <div className="mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
-                      <JoditEditor config = {config} value={content} onChange={(newContent)=>{
+                      <JoditEditor
+                        // config = {config} 
+                        value = {content} 
+                      
+                        onBlur={(newContent)=>{
                         setContent(newContent)
-                        console.log(newContent)}}></JoditEditor>
+                        console.log(newContent)}}
+
+                        // onChange={(newContent)=>{
+                        //   setContent(newContent)
+                        //   console.log(newContent)}}
+                          ></JoditEditor>
                   </div>
                 </div>
 
@@ -346,9 +264,11 @@ export const AddBlog = ()=> {
                     </div>
 
 
-                    {/* <div className="space-y-2">
-                      <Label htmlFor="featured-image">Featured Image</Label>
-                      <Dialog>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" htmlFor="featured-image">
+                        Featured Image
+                      </label>
+                      {/* <Dialog>
                         <DialogTrigger asChild>
                           <Button variant="outline">
                             <ImageIcon className="mr-2 h-4 w-4" /> Select Image
@@ -372,8 +292,8 @@ export const AddBlog = ()=> {
                       </Dialog>
                       {selectedImage && (
                         <p className="text-sm text-muted-foreground">Selected image: {selectedImage}</p>
-                      )}
-                    </div> */}
+                      )} */}
+                    </div>
 
                     <div className="space-y-2">
                     <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" htmlFor="tags">
