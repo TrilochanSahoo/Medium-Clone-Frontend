@@ -9,6 +9,8 @@ import { Link } from "react-router-dom"
 import { TopNavBar } from "../components/Navbar/TopNavBar"
 import { LeftNavBar } from "../components/Navbar/LeftNavBar"
 import { Avatar } from "../components/Avatar"
+import axios from "axios"
+import { BACKEND_URL } from "../config"
 
 // Mock data for tag suggestions and image gallery
 const tagSuggestions = ["Technology", "Web Development", "React", "JavaScript", "UI/UX", "Design", "Programming"]
@@ -20,13 +22,21 @@ const imageGallery = [
 ]
 
 export const AddBlog = ()=> {
+
+  
+
+
   const [isPublished, setIsPublished] = useState(false)
   const [title, setTitle] = useState("")
   const [content, setContent] = useState("")
+  const [category,setCategory] = useState("")
   const [tags, setTags] = useState<string[]>([])
   const [selectedImage, setSelectedImage] = useState(null)
   const [wordCount, setWordCount] = useState(0)
   const [readingTime, setReadingTime] = useState(0)
+  const [publishedDate, setPublishedDate] = useState("")
+  let isBlogExist : boolean = false
+  let blogId : string = ""
 
   const editors = useRef(null)
 
@@ -111,6 +121,8 @@ export const AddBlog = ()=> {
   useEffect(() => {
     const autoSaveInterval = setInterval(() => {
       console.log("Auto-saving...")
+      
+      console.log(new Date().toISOString())
       // Implement your auto-save logic here
     }, 60000) // Auto-save every minute
 
@@ -125,6 +137,87 @@ export const AddBlog = ()=> {
 
   const removeTag = (tag:string) => {
     setTags(tags.filter(t => t !== tag))
+  }
+
+  const addCategory = (e : React.ChangeEvent<{ value: string }>)=>{
+    setCategory(e.target.value)
+  }
+
+
+  const saveBlogHandler = async ()=>{
+    const url : string = `${BACKEND_URL}api/v1/blog`
+    const payload = {
+      title : title,
+      category : category,
+      content : content,
+      readTime : `${readingTime} min read`,
+      tag : tags.toString(),
+      image : "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      published : isPublished,
+      publishedDate : "2024-10-23T18:25:43.511Z"
+    }
+
+    const authToken = `Bearer ${localStorage.getItem("token")}`
+    
+    try {
+      const res = await axios({
+        method : 'post',
+        url : url,
+        headers : {
+          authorization : authToken
+        },
+        data : payload
+      })
+
+      if(res.status==200){
+        alert(res.data.message)
+        isBlogExist = true
+        blogId = res.data.blogInfo.blogId
+      }
+      else{
+        alert(res.data.message)
+      }
+      
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const updateBlogHandler = async ()=>{
+    const url : string = `${BACKEND_URL}api/v1/blog`
+    const payload = {
+      blogId : blogId,
+      title : title,
+      category : category,
+      content : content,
+      readTime : `${readingTime} min read`,
+      tag : tags.toString(),
+      image : "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      published : isPublished,
+      publishedDate : "2024-10-23T18:25:43.511Z"
+    }
+
+    const authToken = `Bearer ${localStorage.getItem("token")}`
+    try {
+      const res = await axios({
+        method : "put",
+        url : url,
+        headers : {
+          Authorization : authToken
+        },
+        data : payload
+      })
+
+      if (res.status==200){
+        alert(res.data.message)
+      }
+      else{
+        alert(res.data.message)
+      }
+      
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   return (
@@ -178,8 +271,25 @@ export const AddBlog = ()=> {
                 <Label htmlFor="published">
                   {isPublished ? "Published" : "Draft"}
                 </Label> */}
-                <Button>Save</Button>
-                <Button className="bg-primary text-primary-foreground hover:bg-primary/90">Publish</Button>
+                <button className="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-cyan-500 to-blue-500 group-hover:from-cyan-500 group-hover:to-blue-500 hover:text-white  focus:ring-4 focus:outline-none focus:ring-cyan-200 dark:focus:ring-cyan-800" 
+                  onClick={()=>{
+                     const res = isBlogExist ? updateBlogHandler() : saveBlogHandler()
+                    }}
+                    >
+                  <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white  rounded-md group-hover:bg-opacity-0">
+                    Save
+                  </span>
+                </button>
+                <button className="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white  focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800" 
+                  onClick={()=>{
+                    setIsPublished(true)
+                    const res = isBlogExist ? updateBlogHandler() : saveBlogHandler()
+                    }}>
+                  <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white rounded-md group-hover:bg-opacity-0">
+                    Publish
+                  </span>
+                </button>
+                
               </div>
             </div>
           </div>
@@ -189,11 +299,8 @@ export const AddBlog = ()=> {
           <div className="container mx-auto px-4 py-8">
             <div className="grid gap-8 md:grid-cols-3">
               <div className="md:col-span-2 space-y-6">
-                <input type="text" placeholder="Enter your blog title"
-                  className="text-xl"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                />
+                <textarea placeholder="Enter your blog title" className="text-xl w-full h-20 p-2" value={title}
+                  onChange={(e) => setTitle(e.target.value)}/>
 
                 <div className="w-full">
                   <div className="mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
@@ -223,19 +330,31 @@ export const AddBlog = ()=> {
               <div className="space-y-6">
                 <Card>
                   <CardContent className="p-4 space-y-4">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" htmlFor="category">
+                        Summary  
+                      </label>
+                      <textarea id="Summary" placeholder="Add Summary" className="flex h-10 w-full items-center justify-between rounded-md cursor-pointer border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"></textarea>
+                      
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-4 space-y-4">
                     {/* single select */}
                     <div className="space-y-2">
                       <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" htmlFor="category">
                         Category 
                       </label>
-                      <select id="category" className="flex h-10 w-full items-center justify-between rounded-md cursor-pointer border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1">
+                      <select id="category" className="flex h-10 w-full items-center justify-between rounded-md cursor-pointer border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+                      onChange={addCategory}>
                           <option value="" disabled selected>
-                            Select your option
+                            Select your Category
                           </option>
-                          <option value="technology" >Technology</option>
-                          <option value="lifestyle" >Lifestyle</option>
-                          <option value="travel" >Travel</option>
-                          <option value="food">Food</option>
+                          <option value="Technology" >Technology</option>
+                          <option value="Lifestyle" >Lifestyle</option>
+                          <option value="Travel" >Travel</option>
+                          <option value="Food">Food</option>
                       </select>
                     </div>
 
@@ -326,7 +445,10 @@ export const AddBlog = ()=> {
                         </div>
                         <input id="default-datepicker" type="date" className="bg-gray-50 border tracking-wide border-gray-300 text-gray-900 text-sm rounded-lg block w-full ps-10 p-2.5 " placeholder="Select date"
                         ref={dateInputRef}
-                        onFocus={handleInputFocus}/>
+                        onFocus={handleInputFocus}
+                        onChange={(e)=>{
+                          setPublishedDate(e.target.value)
+                        }}/>
                       </div>
                       
                     </div>
