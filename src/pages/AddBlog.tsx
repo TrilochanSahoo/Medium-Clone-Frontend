@@ -5,7 +5,7 @@ import JoditEditor from "jodit-react"
 import { Button } from "../components/Button"
 import { Card } from "../components/Card"
 import { CardContent } from "../components/CardContent"
-import { Link } from "react-router-dom"
+import { Link, replace, useNavigate } from "react-router-dom"
 import { TopNavBar } from "../components/Navbar/TopNavBar"
 import { LeftNavBar } from "../components/Navbar/LeftNavBar"
 import { Avatar } from "../components/Avatar"
@@ -35,6 +35,7 @@ export const AddBlog = ()=> {
   const [wordCount, setWordCount] = useState(0)
   const [readingTime, setReadingTime] = useState(0)
   const [publishedDate, setPublishedDate] = useState("")
+  const navigate = useNavigate()
   let isBlogExist : boolean = false
   let blogId : string = ""
 
@@ -172,7 +173,8 @@ export const AddBlog = ()=> {
       if(res.status==200){
         alert(res.data.message)
         isBlogExist = true
-        blogId = res.data.blogInfo.blogId
+        blogId = res.data.BlogInfo.id
+        
       }
       else{
         alert(res.data.message)
@@ -210,6 +212,7 @@ export const AddBlog = ()=> {
 
       if (res.status==200){
         alert(res.data.message)
+        navigate(`/Blog?id=${blogId}`)
       }
       else{
         alert(res.data.message)
