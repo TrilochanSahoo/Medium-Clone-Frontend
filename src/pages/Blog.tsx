@@ -1,23 +1,38 @@
 import { useState, useEffect } from "react"
-import { Link } from "react-router-dom"
+import { Link, useSearchParams } from "react-router-dom"
 import { CalendarIcon, ClockIcon, ThumbsUpIcon, MessageCircleIcon, ShareIcon, SearchIcon } from "lucide-react"
 import { Button } from "../components/Button"
 import { Avatar } from "../components/Avatar"
 import { LeftNavBar } from "../components/Navbar/LeftNavBar"
 import { Footer } from "../components/Navbar/Footer"
+import { BACKEND_URL } from "../config"
+import axios from "axios"
+
+interface post{
+    title : string,
+    category: string,
+    author: string,
+    authorAvatar: string,
+    publishedDate: string,
+    readTime: string,
+    image: string,
+    content : string
+}
 
 export const Blog = () => {
   const [isLiked, setIsLiked] = useState(false)
   const [activeSection, setActiveSection] = useState("")
+  const [searchParams] = useSearchParams()
 
-  const post = {
+
+  const posts = {
     title: "The Future of AI: Transforming Industries and Reshaping Our World",
     category: "TECHNOLOGY",
     author: "Dr. Jane Smith",
     authorAvatar: "/placeholder.svg?height=40&width=40",
-    date: "May 15, 2024",
+    publishedDate: "May 15, 2024",
     readTime: "10 min read",
-    headerImage: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     content: `
       <h2 id="introduction">Introduction</h2>
       <p>Artificial Intelligence (AI) has been rapidly evolving, transforming industries and reshaping our daily lives. As we look ahead to the future, the potential applications and implications of AI are both exciting and profound.</p>
@@ -41,6 +56,26 @@ export const Blog = () => {
       <p>The future of AI promises groundbreaking advancements across various sectors. As we embrace these technologies, it's essential to consider both the opportunities and challenges they present.</p>
     `,
   }
+  const [post, setPosts] = useState<post>(posts)
+
+  useEffect(()=>{
+    const url = `${BACKEND_URL}api/v1/blog/${searchParams.get("id")}`
+    const token = localStorage.getItem("token")
+    const loadContent = async()=>{
+      await axios({
+        method: "get",
+        url : url,
+        headers : {
+          Authorization : `Bearer ${token}`
+        }
+      })
+      .then(function(res){
+        console.log(res.data.blogInfo)
+        setPosts(res.data.blogInfo)
+      })
+    }
+    loadContent()
+  },[])
 
   const tableOfContents = [
     { id: "introduction", title: "Introduction" },
@@ -151,7 +186,7 @@ export const Blog = () => {
               <div className="lg:w-1/2">
                 <div className="relative aspect-[4/3] overflow-hidden rounded-lg">
                   <img
-                    src={post.headerImage}
+                    src={post.image}
                     alt="Blog post header image"
                     className="object-cover w-full h-full"
                   />
@@ -164,13 +199,13 @@ export const Blog = () => {
                 </div>
                 <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
                 <div className="flex items-center mb-4">
-                  <Avatar className="w-10 h-10 mr-4 relative flex shrink-0 overflow-hidden rounded-full" src={post}>
-                  </Avatar>
+                  {/* <Avatar className="w-10 h-10 mr-4 relative flex shrink-0 overflow-hidden rounded-full" src={post}>
+                  </Avatar> */}
                   <div>
                     <p className="font-semibold">{post.author}</p>
                     <div className="flex items-center text-sm text-gray-500">
                       <CalendarIcon className="w-4 h-4 mr-1" />
-                      <span>{post.date}</span>
+                      <span>{post.publishedDate.split("T")[0]}</span>
                       <span className="mx-2">•</span>
                       <ClockIcon className="w-4 h-4 mr-1" />
                       <span>{post.readTime}</span>

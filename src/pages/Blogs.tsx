@@ -123,7 +123,7 @@ export const Blogs = () => {
         <div className={`grid gap-8 ${isCardView ? "md:grid-cols-2 lg:grid-cols-3" : "grid-cols-1"}`}>
           {blogPosts.map((post, index) => (
             <BlogTitleCard post={post} index={index} isCardView={isCardView} onClick={()=>{
-              navigate(`/blog`)
+              navigate(`/blog?id=${post.id}`)
             }}></BlogTitleCard>
           ))}
         </div>
