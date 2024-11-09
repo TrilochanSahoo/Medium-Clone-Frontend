@@ -15,7 +15,9 @@ export const LeftNavBar = ()=>{
             <FileText className="w-6 h-6" />
           </Button>
           <Button className="text-gray-600 h-10 w-10 hover:bg-accent hover:text-accent-foreground hover:text-gray-900">
-            <Settings className="w-6 h-6" />
+            <Link to="/profile">
+              <Settings className="w-6 h-6" />
+            </Link>
           </Button>
         </aside>
     )
