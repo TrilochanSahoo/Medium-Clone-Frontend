@@ -50,10 +50,43 @@ export const Auth = ({type}:{type:"signup" | "signin"})=>{
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const responseMessage = (res:any) => {
-        console.log(res);
-        localStorage.setItem("token",res.credential)
-        navigate("/Blogs")
+    const responseMessage = async (res:any) => {
+        console.log(res.credential);
+
+        let apiUrl:string = ''
+        let payload
+        try {
+            if(type==="signup"){
+                apiUrl = `${BACKEND_URL}api/v1/auth/signup`
+                payload = {
+                    credential : res.credential,
+                    externalLogin : true,
+                    externalId: 1
+                }
+            }
+            else{
+                apiUrl = `${BACKEND_URL}api/v1/auth/signin`
+                payload = {
+                    credential : res.credential,
+                    externalLogin : true,
+                    externalId : 1
+                }
+            }
+    
+            const result = await axios.post(apiUrl,payload)
+            if(result.status===200){
+                localStorage.setItem("token",result.data.auth)
+                navigate("/Blogs")
+            }
+            else{
+                alert(result.data.message)
+            }
+            
+        } catch (error) {
+            console.log(error)
+        }
+        
+        // navigate("/Blogs")
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const errorMessage = () => {
