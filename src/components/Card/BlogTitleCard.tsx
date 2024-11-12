@@ -77,7 +77,7 @@ export const BlogTitleCard = ({index,post,isCardView,onClick}:BlogTitleType)=>{
                   </div>
                   <div className='flex items-center text-sm text-muted-foreground'>
                     <CalendarIcon className='w-4 h-4 mr-1' />
-                    {post.publishedDate}
+                    {post.publishedDate.split("T")[0]}
                   </div>
                 </div>
               </div>
