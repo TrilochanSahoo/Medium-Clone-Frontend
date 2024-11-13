@@ -5,6 +5,7 @@ import { LeftNavBar } from "../components/Navbar/LeftNavBar"
 import { Card } from "../components/Card"
 import { CardContent } from "../components/CardContent"
 import { Inputfield } from "../components/Inputfield"
+import { Avatar } from "../components/Avatar"
 
 
 export const UserProfile = ()=>{
@@ -33,12 +34,19 @@ export const UserProfile = ()=>{
       {/* <header className='bg-white shadow-sm'>
         <TopNavBar isCardView={true} CardViewBtnHandler = {()=>{}} ></TopNavBar>
       </header> */}
-
       <LeftNavBar></LeftNavBar>
+
+      <div className="flex-1 flex flex-col">
+        {/* Top Navbar */}
+        <header className="bg-card border-b px-4 py-3 flex items-center justify-between">
+        <TopNavBar isCardView={true} CardViewBtnHandler = {()=>{}} ></TopNavBar>
+        </header>
+      
+
 
         {/* Main Content */}
         <main className="flex-1 overflow-y-auto p-4 md:p-6">
-          <div className="max-w-4xl mx-auto space-y-6">
+          <div className="w-auto mx-16 space-y-6">
             {/* Breadcrumb */}
             {/* <div className="flex items-center text-sm text-muted-foreground">
               <span>My profile</span>
@@ -79,55 +87,62 @@ export const UserProfile = ()=>{
 
             {/* Main Form */}
             <Card>
-              <CardContent className="p-6">
+              <CardContent className="pt-6 bg-gray-300">
                 <div className="grid grid-cols-1 md:grid-cols-[240px_1fr] gap-8">
                   {/* Profile Photo */}
-                  {/* <div className="text-center">
-                    <Avatar className="w-32 h-32 mx-auto mb-4">
+                  <div className="text-center">
+                    {/* <Avatar className="w-32 h-32 mx-auto mb-4">
                       <AvatarImage src={avatarSrc} alt="Profile photo" />
                       <AvatarFallback>GK</AvatarFallback>
-                    </Avatar>
-                    <Label htmlFor="avatar-upload" className="cursor-pointer">
+                    </Avatar> */}
+                    <div className="w-32 h-32 mx-auto mb-4">
+                      <img className='aspect-square h-full w-full' src="https://plus.unsplash.com/premium_photo-1661914978519-52a11fe159a7?q=80&w=1035&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" />
+                      {/* <div className='flex h-full w-full items-center justify-center rounded-full bg-muted'>
+                          {src.author.split(" ").map((n) => n[0]).join("")}
+                      </div> */}
+                  </div>
+                    <label htmlFor="avatar-upload" className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                       <div className="flex items-center justify-center text-sm text-primary hover:text-primary/90">
                         <Upload className="h-4 w-4 mr-2" />
                         Upload new photo
                       </div>
-                      <Input
+                      {/* <Input
                         id="avatar-upload"
                         type="file"
                         accept="image/*"
                         className="hidden"
                         onChange={handleAvatarChange}
-                      />
-                    </Label>
-                  </div> */}
+                      /> */}
+                      <input type="file" id="avatar-upload" className="hidden" onChange={handleAvatarChange} accept="image/*"/>
+                    </label>
+                  </div>
 
                   {/* Form Fields */}
                   <div className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
+                      <div className="space-y-2 w-3/5">
                         <Inputfield label="First Name" inpType="text" inpId="firstName" inpName="firstName" inpPlaceholder="firstName" onChange={()=>{}}></Inputfield>
                       </div>
-                      <div className="space-y-2">
+                      <div className="space-y-2 w-3/5">
                         <Inputfield label="Last Name" inpType="text" inpId="lastName" inpName="lastName" inpPlaceholder="lastName" onChange={()=>{}}></Inputfield>
                       </div>
                     </div>
 
-                    <div className="space-y-2">
+                    <div className="space-y-2 w-4/5">
                     <Inputfield label="Email" inpType="email" inpId="email" inpName="email" inpPlaceholder="email" onChange={()=>{}}></Inputfield>
                       
                     </div>
 
-                    <div className="space-y-2">
+                    <div className="space-y-2 w-4/5">
                     <Inputfield label="phone" inpType="tel" inpId="phone" inpName="phone" inpPlaceholder="phone" onChange={()=>{}}></Inputfield>
                     </div>
 
-                    <div className="space-y-2">
+                    <div className="space-y-2 w-4/5">
                     <Inputfield label="Address" inpType="text" inpId="Address" inpName="Address" inpPlaceholder="Address" onChange={()=>{}}></Inputfield>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {/* <div className="space-y-2">
+                      {/* <div className="space-y-2 w-4/5">
                         <Label htmlFor="gender">Gender</Label>
                         <Select defaultValue="male">
                           <SelectTrigger id="gender">
@@ -140,14 +155,15 @@ export const UserProfile = ()=>{
                           </SelectContent>
                         </Select>
                       </div> */}
-                      <div className="space-y-2">
+                      <div className="space-y-2 w-4/5">
                       <Inputfield label="Date of Birth" inpType="date" inpId="birthdate" inpName="birthdate" inpPlaceholder="birthdate" onChange={()=>{}}></Inputfield>
                         
                       </div>
                     </div>
 
-                    <div className="space-y-2">
-                    <Inputfield label="Bio" inpType="text" inpId="bio" inpName="bio" inpPlaceholder="bio" onChange={()=>{}}></Inputfield>
+                    <div className="space-y-2 w-4/5">
+                    <label className="block text-sm font-medium text-gray-700">Bio</label>
+                    <textarea className="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300" name="bio" id="bio" onChange={()=>{}}></textarea>
                     </div>
 
                     {/* <div className="space-y-2">
@@ -165,6 +181,7 @@ export const UserProfile = ()=>{
             </Card>
           </div>
         </main>
+        </div>
       </div>
   )
 }
