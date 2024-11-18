@@ -1,12 +1,3 @@
-// import { Card } from "@/components/ui/card"
-// import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-// import { Button } from "@/components/ui/button"
-// import { Badge } from "@/components/ui/badge"
-// import {
-//   HoverCard,
-//   HoverCardContent,
-//   HoverCardTrigger,
-// } from "@/components/ui/hover-card"
 import { CalendarDays, MapPin, Twitter, Instagram, Linkedin } from "lucide-react"
 import { Card } from "./Card"
 import { Button } from "./Button"
