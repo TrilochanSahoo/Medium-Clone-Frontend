@@ -1,16 +1,18 @@
 import { CalendarIcon, ClockIcon} from "lucide-react";
 
+interface author{
+  name : string
+}
 interface Blog {
-    id : string,
-    title : string,
-    content : string,
-    category : string,
-    tag : string,
-    readTime : string,
-    image : string,
-    published : boolean,
-    publishedDate : string,
-    authorId : string
+  id : string,
+  title : string,
+  content : string,
+  category : string,
+  tag : string,
+  readTime : string,
+  image : string,
+  publishedDate : string,
+  author : author
 }
 
 interface BlogTitleType {
@@ -73,7 +75,7 @@ export const BlogTitleCard = ({index,post,isCardView,onClick}:BlogTitleType)=>{
                           .join("")}
                       </div> */}
                     </div>
-                    <span className='text-sm font-medium'>{post.authorId}</span>
+                    <span className='text-sm font-medium'>{post.author.name}</span>
                   </div>
                   <div className='flex items-center text-sm text-muted-foreground'>
                     <CalendarIcon className='w-4 h-4 mr-1' />

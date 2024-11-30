@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, MouseEventHandler } from "react";
 import { BACKEND_URL } from "../config";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -7,6 +7,9 @@ import { TopNavBar } from "../components/Navbar/TopNavBar";
 import { LeftNavBar } from "../components/Navbar/LeftNavBar";
 import { Footer } from "../components/Navbar/Footer";
 
+interface author{
+  name : string
+}
 interface Blog {
   id : string,
   title : string,
@@ -15,9 +18,8 @@ interface Blog {
   tag : string,
   readTime : string,
   image : string,
-  published : boolean,
   publishedDate : string,
-  authorId : string
+  author : author
 }
 
 export const Blogs = () => {
@@ -27,44 +29,6 @@ export const Blogs = () => {
   const navigate = useNavigate()
 
   const categories = ["All", "Technology", "Design", "Business", "Lifestyle"];
-  const blogPost = [
-    {
-      title: "The Future of Artificial Intelligence in 2024",
-      excerpt:
-        "Explore the groundbreaking advancements in AI and how they're reshaping industries across the globe.",
-      author: "Dr. Jane Smith",
-      date: "2024-05-15",
-      readTime: "8 min read",
-      category: "Technology",
-      tags: ["AI", "Machine Learning", "Future Tech"],
-      image:
-        "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
-    {
-      title: "Mastering the Art of Minimalist Design",
-      excerpt:
-        "Discover how to create stunning, clutter-free designs that captivate users and improve user experience.",
-      author: "Alex Chen",
-      date: "2024-05-12",
-      readTime: "6 min read",
-      category: "Design",
-      tags: ["UX/UI", "Minimalism", "Web Design"],
-      image:
-        "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
-    {
-      title: "The Rise of Sustainable Business Practices",
-      excerpt:
-        "Learn how companies are adopting eco-friendly strategies to reduce their carbon footprint and appeal to conscious consumers.",
-      author: "Emma Green",
-      date: "2024-05-10",
-      readTime: "7 min read",
-      category: "Business",
-      tags: ["Sustainability", "Green Business", "Corporate Responsibility"],
-      image:
-        "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
-  ];
 
   useEffect(()=>{
     const apiUrl:string = `${BACKEND_URL}api/v1/blog/bulk`
@@ -95,6 +59,47 @@ export const Blogs = () => {
     setIsCardView(!isCardView)
   }
 
+  const btnSearchHandler = async(e : React.MouseEvent<HTMLButtonElement>)=>{
+    const token = localStorage.getItem("token")
+    const url = `${BACKEND_URL}api/v1/blog/search`
+    const btnText =  e.currentTarget.innerText
+    const payload = {
+      type : "category",
+      info : btnText
+    }
+    try {
+      if (btnText == "All"){
+        const res = await axios({
+          method : "get",
+          url : `${BACKEND_URL}api/v1/blog/bulk`,
+          headers : {
+            authorization : `Bearer ${token}`
+          }
+        })
+        
+        if(res.status==200){
+          setBlogPosts(res.data.blogInfo)
+        }
+      }
+      else{
+        const res = await axios({
+          method : "post",
+          url : url,
+          headers : {
+            authorization : `Bearer ${token}`
+          },
+          data : payload
+        })
+        
+        if(res.status==200){
+          setBlogPosts(res.data.bloginfo)
+        }
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
 
   return (
     <div className='min-h-screen bg-gray-50 flex flex-col'>
@@ -112,7 +117,7 @@ export const Blogs = () => {
         {/* category */}
         <div className='flex flex-wrap gap-2 mb-8'>
           {categories.map((category) => (
-            <button key={category} className='h-9 rounded-md px-3 border border-input bg-background hover:bg-accent hover:text-accent-foreground'>
+            <button key={category} onClick={btnSearchHandler} className='h-9 rounded-md px-3 border border-input bg-background hover:bg-accent hover:text-accent-foreground'>
               {category}
             </button>
           ))}
@@ -128,8 +133,6 @@ export const Blogs = () => {
           ))}
         </div>
       </main>
-
-      
       <Footer></Footer>
       
     </div>
