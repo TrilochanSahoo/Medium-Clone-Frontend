@@ -8,15 +8,21 @@ import { Footer } from "../components/Navbar/Footer"
 import { BACKEND_URL } from "../config"
 import axios from "axios"
 
+interface author{
+  name : string
+}
+interface postdetails{
+  content : string
+}
+
 interface post{
     title : string,
     category: string,
-    author: string,
-    authorAvatar: string,
+    author: author,
     publishedDate: string,
     readTime: string,
     image: string,
-    content : string
+    postDetails : postdetails[]
 }
 
 export const Blog = () => {
@@ -28,12 +34,11 @@ export const Blog = () => {
   const posts = {
     title: "The Future of AI: Transforming Industries and Reshaping Our World",
     category: "TECHNOLOGY",
-    author: "Dr. Jane Smith",
-    authorAvatar: "/placeholder.svg?height=40&width=40",
+    author: {name:"abc"},
     publishedDate: "May 15, 2024",
     readTime: "10 min read",
     image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    content: `
+    postDetails : [{"content": `
       <h2 id="introduction">Introduction</h2>
       <p>Artificial Intelligence (AI) has been rapidly evolving, transforming industries and reshaping our daily lives. As we look ahead to the future, the potential applications and implications of AI are both exciting and profound.</p>
       
@@ -54,7 +59,7 @@ export const Blog = () => {
       
       <h2 id="conclusion">Conclusion</h2>
       <p>The future of AI promises groundbreaking advancements across various sectors. As we embrace these technologies, it's essential to consider both the opportunities and challenges they present.</p>
-    `,
+    `}]
   }
   const [post, setPosts] = useState<post>(posts)
 
@@ -202,7 +207,7 @@ export const Blog = () => {
                   {/* <Avatar className="w-10 h-10 mr-4 relative flex shrink-0 overflow-hidden rounded-full" src={post}>
                   </Avatar> */}
                   <div>
-                    <p className="font-semibold">{post.author}</p>
+                    <p className="font-semibold">{post.author.name}</p>
                     <div className="flex items-center text-sm text-gray-500">
                       <CalendarIcon className="w-4 h-4 mr-1" />
                       <span>{post.publishedDate.split("T")[0]}</span>
@@ -215,7 +220,7 @@ export const Blog = () => {
               </div>
             </div>
 
-            <article className="prose max-w-none lg:prose-lg" dangerouslySetInnerHTML={{ __html: post.content }}/>
+            <article className="prose max-w-none lg:prose-lg" dangerouslySetInnerHTML={{ __html: post.postDetails[0].content }}/>
 
             {/* like and comment section */}
             <div className="flex items-center space-x-4 mt-8">

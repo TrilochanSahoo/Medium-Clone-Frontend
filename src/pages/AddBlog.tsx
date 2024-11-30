@@ -23,9 +23,6 @@ const imageGallery = [
 
 export const AddBlog = ()=> {
 
-  
-
-
   const [isPublished, setIsPublished] = useState(false)
   const [title, setTitle] = useState("")
   const [content, setContent] = useState("")
@@ -35,6 +32,7 @@ export const AddBlog = ()=> {
   const [wordCount, setWordCount] = useState(0)
   const [readingTime, setReadingTime] = useState(0)
   const [publishedDate, setPublishedDate] = useState("")
+  const [summary, setSummary] = useState("")
   const navigate = useNavigate()
   let isBlogExist : boolean = false
   let blogId : string = ""
@@ -150,6 +148,7 @@ export const AddBlog = ()=> {
     const payload = {
       title : title,
       category : category,
+      summary : summary,
       content : content,
       readTime : `${readingTime} min read`,
       tag : tags.toString(),
@@ -337,7 +336,8 @@ export const AddBlog = ()=> {
                       <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" htmlFor="category">
                         Summary  
                       </label>
-                      <textarea id="Summary" placeholder="Add Summary" className="flex h-10 w-full items-center justify-between rounded-md cursor-pointer border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"></textarea>
+                      <textarea id="Summary" placeholder="Add Summary" className="flex h-10 w-full items-center justify-between rounded-md cursor-pointer border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+                      onChange={(e) => setSummary(e.target.value)}></textarea>
                       
                     </div>
                   </CardContent>
