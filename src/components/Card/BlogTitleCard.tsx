@@ -1,4 +1,8 @@
 import { CalendarIcon, ClockIcon} from "lucide-react";
+import { BACKEND_URL } from "../../config";
+import axios from "axios";
+import { useState } from "react";
+import { UserProfileCard } from "../UserProfileCard";
 
 interface author{
   name : string
@@ -12,6 +16,7 @@ interface Blog {
   readTime : string,
   image : string,
   publishedDate : string,
+  authorId : string,
   author : author
 }
 
@@ -22,7 +27,47 @@ interface BlogTitleType {
     onClick : ()=>void
 }
 
+interface UserDetails {
+    name: string,
+    avatar: string,
+    role: string,
+    bio: string,
+    location: string,
+    joined: string,
+    posts: number,
+    followers: number,
+    email: string,
+    twitter: string,
+    instagram: string,
+    linkedin: string
+
+}
+
 export const BlogTitleCard = ({index,post,isCardView,onClick}:BlogTitleType)=>{
+
+  const [userdetails,setUserDetails] = useState<UserDetails>()
+  const [loading,setLoading] = useState(true)
+
+  const mouseOverHandler = async (e : React.MouseEvent<HTMLButtonElement | HTMLImageElement>)=>{
+    const url = `${BACKEND_URL}api/v1/user/userProfileInfo/${post.authorId}`
+    const token = localStorage.getItem("token")
+    try{
+      // const res = await axios({
+      //   method : "get",
+      //   url : `url`,
+      //   headers : {
+      //     authorization : `Bearer ${token}`
+      //   }
+      // })
+
+      // console.log(res.data)
+      setLoading(false)
+    }
+    catch(error){
+      console.log(error)
+    }
+  }
+
     return (
         <div key={index} className={`rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden hover:shadow-lg transition-shadow duration-300 ${isCardView ? "" : "flex"}`} onClick={onClick}>
             <img src={post.image} alt={post.title} className={`object-cover ${isCardView ? "w-full h-48" : "w-1/3 h-full"}`}/>
@@ -66,7 +111,9 @@ export const BlogTitleCard = ({index,post,isCardView,onClick}:BlogTitleType)=>{
                         className='aspect-square h-full w-full'
                         src="https://plus.unsplash.com/premium_photo-1661914978519-52a11fe159a7?q=80&w=1035&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                         // alt={post.author}
+                        onMouseEnter={mouseOverHandler} 
                       />
+                      
 
                       {/* <div className='flex h-full w-full items-center justify-center rounded-full bg-muted'>
                         {post.author
@@ -82,6 +129,8 @@ export const BlogTitleCard = ({index,post,isCardView,onClick}:BlogTitleType)=>{
                     {post.publishedDate.split("T")[0]}
                   </div>
                 </div>
+                {loading?"": <UserProfileCard></UserProfileCard>}
+                      <UserProfileCard></UserProfileCard>
               </div>
               
             </div>

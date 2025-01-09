@@ -19,6 +19,7 @@ interface Blog {
   readTime : string,
   image : string,
   publishedDate : string,
+  authorId : string,
   author : author
 }
 
